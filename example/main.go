@@ -21,7 +21,7 @@ func hello(w http.ResponseWriter, req *http.Request) {
 
 	if !info.Allowed {
 		w.WriteHeader(http.StatusTooManyRequests)
-		fmt.Fprintf(w, "Rate limit exceeded. Try again in %d seconds\n", info.CounterResetInSecond)
+		fmt.Fprintf(w, "Rate limit exceeded. Try again in %d seconds\n", int64(info.ResetIn.Seconds()))
 	} else {
 		fmt.Fprintf(w, "hi!! You have %d calls left.\n", info.RemainingCalls)
 	}

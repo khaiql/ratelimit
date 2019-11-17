@@ -6,6 +6,8 @@ import (
 )
 
 func TestCountRequest(t *testing.T) {
+	key := "test_key"
+
 	tcs := []struct {
 		name            string
 		noRequests      int
@@ -36,23 +38,23 @@ func TestCountRequest(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		key := "test_key"
 		t.Run(tc.name, func(t *testing.T) {
-			storage := newMemoryStorage()
-			var window *WindowInfo
+			storage := NewMemoryStorage()
+			var lastWindow *WindowInfo
 			requestTs := tc.requestTs
+
 			for i := 0; i < tc.noRequests; i++ {
-				window, _ = storage.CountRequest(key, requestTs, tc.windowDuration)
+				lastWindow, _ = storage.CountRequest(key, requestTs, tc.windowDuration)
 				time.Sleep(tc.interval)
 				requestTs = requestTs.Add(tc.interval)
 			}
 
-			if window.Calls != tc.expectedCount {
-				t.Errorf("expected %d calls, got %d", tc.expectedCount, window.Calls)
+			if lastWindow.Calls != tc.expectedCount {
+				t.Errorf("expected %d calls, got %d", tc.expectedCount, lastWindow.Calls)
 			}
 
-			if tc.expectedStartTs != window.StartTimestamp {
-				t.Errorf("expected %v, got %v", tc.expectedStartTs, window.StartTimestamp)
+			if tc.expectedStartTs != lastWindow.StartTimestamp {
+				t.Errorf("expected %v, got %v", tc.expectedStartTs, lastWindow.StartTimestamp)
 			}
 		})
 	}

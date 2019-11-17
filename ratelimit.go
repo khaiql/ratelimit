@@ -5,10 +5,10 @@ import (
 )
 
 type RateInfo struct {
-	Allowed              bool
-	LastCall             time.Time
-	RemainingCalls       int
-	CounterResetInSecond int64
+	Allowed        bool
+	LastCall       time.Time
+	RemainingCalls int
+	ResetIn        time.Duration
 }
 
 type RateLimiter interface {

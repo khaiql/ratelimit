@@ -11,7 +11,7 @@ type MemoryStorage struct {
 	firstReq map[string]time.Time
 }
 
-func newMemoryStorage() *MemoryStorage {
+func NewMemoryStorage() *MemoryStorage {
 	return &MemoryStorage{
 		countMap: make(map[string]int),
 		firstReq: make(map[string]time.Time),

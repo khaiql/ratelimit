@@ -16,22 +16,19 @@ type FixedWindow struct {
 // Option to be applied to a FixedWindow
 type Option func(fw *FixedWindow)
 
-func SetStorageOption(stgOption StorageOption) Option {
+func SetStorage(storage Storage) Option {
 	return func(fw *FixedWindow) {
-		storage, ok := storageOptionMap[stgOption]
-		if ok {
-			fw.storage = storage
-		}
+		fw.storage = storage
 	}
 }
 
 // NewRateLimiter returns a new FixedWindow limiter
+// If storage is not set, it is defaulted to MemoryStorage
 func NewRateLimiter(max int, duration time.Duration, options ...Option) *FixedWindow {
-	defaultStorage := storageOptionMap[Memory]
 	fw := &FixedWindow{
 		max:      max,
 		duration: duration,
-		storage:  defaultStorage,
+		storage:  NewMemoryStorage(),
 	}
 
 	for _, opt := range options {
@@ -41,10 +38,14 @@ func NewRateLimiter(max int, duration time.Duration, options ...Option) *FixedWi
 	return fw
 }
 
+var Now = func() time.Time {
+	return time.Now()
+}
+
 // Allow implements the RateLimiter interface
 func (fw *FixedWindow) Allow(key string) (*ratelimit.RateInfo, error) {
 	allowed := true
-	now := time.Now()
+	now := Now()
 	windowInfo, err := fw.storage.CountRequest(key, now, fw.duration)
 	if err != nil {
 		return nil, err
@@ -60,10 +61,10 @@ func (fw *FixedWindow) Allow(key string) (*ratelimit.RateInfo, error) {
 	}
 
 	ri := &ratelimit.RateInfo{
-		Allowed:              allowed,
-		LastCall:             now,
-		RemainingCalls:       remainingCalls,
-		CounterResetInSecond: int64((fw.duration - diff).Seconds()),
+		Allowed:        allowed,
+		LastCall:       now,
+		RemainingCalls: remainingCalls,
+		ResetIn:        fw.duration - diff,
 	}
 
 	return ri, nil
