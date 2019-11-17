@@ -50,7 +50,7 @@ func (fw *FixedWindow) Allow(key string) (*ratelimit.RateInfo, error) {
 		return nil, err
 	}
 
-	diff := windowInfo.DurationFrom(now)
+	diff := now.Sub(windowInfo.StartTimestamp)
 
 	// possiblly have exceeded the rate
 	remainingCalls := fw.max - windowInfo.Calls
