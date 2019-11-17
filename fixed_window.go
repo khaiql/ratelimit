@@ -45,14 +45,15 @@ func (fw *FixedWindow) Allow(key string) (*RateInfo, error) {
 
 	diff := firstReq.DurationFrom(now)
 
+	// possiblly have exceeded the rate
+	if fw.max-firstReq.Calls <= 0 {
+		allowed = false
+	}
+
 	// reset the counter when the request is made outside the window
 	if diff > fw.duration {
 		fw.storage.ResetCounter(key)
-	}
-
-	// exceeded the rate
-	if fw.max-firstReq.Calls <= 0 {
-		allowed = false
+		allowed = true // make sure user can still make request if the window is reset
 	}
 
 	req, err := fw.storage.TrackRequest(key, now)
@@ -69,7 +70,7 @@ func (fw *FixedWindow) Allow(key string) (*RateInfo, error) {
 		Allowed:              allowed,
 		LastCall:             now,
 		RemainingCalls:       remainingCalls,
-		CounterResetInSecond: (fw.duration - diff).Seconds(),
+		CounterResetInSecond: int64((fw.duration - diff).Seconds()),
 	}
 
 	return ri, nil

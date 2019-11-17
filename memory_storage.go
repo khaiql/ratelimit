@@ -12,6 +12,14 @@ type MemoryStorage struct {
 	firstReq map[string]time.Time
 }
 
+func newMemoryStorage() *MemoryStorage {
+	return &MemoryStorage{
+		countMap: make(map[string]int),
+		lastReq:  make(map[string]time.Time),
+		firstReq: make(map[string]time.Time),
+	}
+}
+
 func (l *MemoryStorage) GetFirstRequestInfo(key string) (*RequestInfo, error) {
 	l.mu.Lock()
 	defer l.mu.Unlock()

@@ -11,7 +11,7 @@ const (
 
 var (
 	storageOptionMap = map[StorageOption]Storage{
-		Memory: &MemoryStorage{},
+		Memory: newMemoryStorage(),
 	}
 )
 

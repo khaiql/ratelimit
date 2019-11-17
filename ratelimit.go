@@ -8,7 +8,7 @@ type RateInfo struct {
 	Allowed              bool
 	LastCall             time.Time
 	RemainingCalls       int
-	CounterResetInSecond float64
+	CounterResetInSecond int64
 }
 
 type RateLimiter interface {
