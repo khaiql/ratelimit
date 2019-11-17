@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/khaiql/ratelimiter/fixedwindow"
+	"github.com/khaiql/ratelimit/fixedwindow"
 )
 
 var (

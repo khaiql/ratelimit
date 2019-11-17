@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	ratelimit "github.com/khaiql/ratelimiter"
+	"github.com/khaiql/ratelimit"
 )
 
 func TestAllow_Concurrent(t *testing.T) {

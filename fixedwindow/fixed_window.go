@@ -3,7 +3,7 @@ package fixedwindow
 import (
 	"time"
 
-	ratelimit "github.com/khaiql/ratelimiter"
+	"github.com/khaiql/ratelimit"
 )
 
 // FixedWindow represents a rate limit window
@@ -16,6 +16,7 @@ type FixedWindow struct {
 // Option to be applied to a FixedWindow
 type Option func(fw *FixedWindow)
 
+// SetStorage modifies the storage to be used by FixedWindow
 func SetStorage(storage Storage) Option {
 	return func(fw *FixedWindow) {
 		fw.storage = storage
@@ -38,6 +39,7 @@ func NewRateLimiter(max int, duration time.Duration, options ...Option) *FixedWi
 	return fw
 }
 
+// Now is premarily used for mocking in test
 var Now = func() time.Time {
 	return time.Now()
 }

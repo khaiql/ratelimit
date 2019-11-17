@@ -32,9 +32,8 @@ func (l *MemoryStorage) CountRequest(key string, requestTs time.Time, windowDura
 
 	l.countMap[key] += 1
 	info := &WindowInfo{
-		StartTimestamp:   startTs,
-		LastReqTimestamp: requestTs,
-		Calls:            l.countMap[key],
+		StartTimestamp: startTs,
+		Calls:          l.countMap[key],
 	}
 
 	return info, nil
