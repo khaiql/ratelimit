@@ -1,13 +1,19 @@
-package ratelimit
+package fixedwindow
 
-import "time"
+import (
+	"time"
 
+	ratelimit "github.com/khaiql/ratelimiter"
+)
+
+// FixedWindow represents a rate limit window
 type FixedWindow struct {
 	max      int
 	duration time.Duration
 	storage  Storage
 }
 
+// Option to be applied to a FixedWindow
 type Option func(fw *FixedWindow)
 
 func SetStorageOption(stgOption StorageOption) Option {
@@ -19,7 +25,8 @@ func SetStorageOption(stgOption StorageOption) Option {
 	}
 }
 
-func NewFixedWindowLimiter(max int, duration time.Duration, options ...Option) *FixedWindow {
+// NewRateLimiter returns a new FixedWindow limiter
+func NewRateLimiter(max int, duration time.Duration, options ...Option) *FixedWindow {
 	defaultStorage := storageOptionMap[Memory]
 	fw := &FixedWindow{
 		max:      max,
@@ -34,39 +41,25 @@ func NewFixedWindowLimiter(max int, duration time.Duration, options ...Option) *
 	return fw
 }
 
-func (fw *FixedWindow) Allow(key string) (*RateInfo, error) {
-	firstReq, err := fw.storage.GetFirstRequestInfo(key)
+// Allow implements the RateLimiter interface
+func (fw *FixedWindow) Allow(key string) (*ratelimit.RateInfo, error) {
+	allowed := true
+	now := time.Now()
+	windowInfo, err := fw.storage.CountRequest(key, now, fw.duration)
 	if err != nil {
 		return nil, err
 	}
 
-	allowed := true
-	now := time.Now()
-
-	diff := firstReq.DurationFrom(now)
+	diff := windowInfo.DurationFrom(now)
 
 	// possiblly have exceeded the rate
-	if fw.max-firstReq.Calls <= 0 {
+	remainingCalls := fw.max - windowInfo.Calls
+	if remainingCalls < 0 {
+		remainingCalls = 0
 		allowed = false
 	}
 
-	// reset the counter when the request is made outside the window
-	if diff > fw.duration {
-		fw.storage.ResetCounter(key)
-		allowed = true // make sure user can still make request if the window is reset
-	}
-
-	req, err := fw.storage.TrackRequest(key, now)
-	if err != nil {
-		return nil, err
-	}
-
-	remainingCalls := fw.max - req.Calls
-	if remainingCalls < 0 {
-		remainingCalls = 0
-	}
-
-	ri := &RateInfo{
+	ri := &ratelimit.RateInfo{
 		Allowed:              allowed,
 		LastCall:             now,
 		RemainingCalls:       remainingCalls,

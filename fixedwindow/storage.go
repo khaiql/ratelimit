@@ -1,4 +1,4 @@
-package ratelimit
+package fixedwindow
 
 import "time"
 
@@ -16,7 +16,5 @@ var (
 )
 
 type Storage interface {
-	GetFirstRequestInfo(key string) (*RequestInfo, error)
-	TrackRequest(key string, requestTs time.Time) (*RequestInfo, error)
-	ResetCounter(key string) error
+	CountRequest(key string, requestTs time.Time, windowDuration time.Duration) (*WindowInfo, error)
 }

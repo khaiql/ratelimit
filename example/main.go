@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	ratelimit "github.com/khaiql/ratelimiter"
+	"github.com/khaiql/ratelimiter/fixedwindow"
 )
 
 var (
-	rl = ratelimit.NewFixedWindowLimiter(3, 10*time.Second)
+	rl = fixedwindow.NewRateLimiter(3, 10*time.Second)
 )
 
 func hello(w http.ResponseWriter, req *http.Request) {
@@ -23,7 +23,7 @@ func hello(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusTooManyRequests)
 		fmt.Fprintf(w, "Rate limit exceeded. Try again in %d seconds\n", info.CounterResetInSecond)
 	} else {
-		fmt.Fprintf(w, "hello\n")
+		fmt.Fprintf(w, "hi!! You have %d calls left.\n", info.RemainingCalls)
 	}
 }
 
