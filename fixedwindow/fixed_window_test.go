@@ -23,6 +23,7 @@ func TestAllow_Concurrent(t *testing.T) {
 		fw = NewRateLimiter(max, duration, SetStorage(storage))
 	)
 
+	// the test simulate 5 concurrent requests
 	for i := 0; i < max+2; i++ {
 		wg.Add(1)
 
@@ -51,9 +52,15 @@ func TestAllow_Concurrent(t *testing.T) {
 	}
 
 	time.Sleep(duration)
-	newResult, _ := fw.Allow(key)
+
+	// Test when the request is made after the window closes
+	newResult, err := fw.Allow(key)
 	if !newResult.Allowed {
 		t.Error("new request after the window should be allowed")
+	}
+
+	if err != nil {
+		t.Errorf("expected no error but got %v", err)
 	}
 }
 

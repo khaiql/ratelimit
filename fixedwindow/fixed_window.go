@@ -39,7 +39,7 @@ func NewRateLimiter(max int, duration time.Duration, options ...Option) *FixedWi
 	return fw
 }
 
-// Now is premarily used for mocking in test
+// Now is primarily used for mocking in test
 var Now = func() time.Time {
 	return time.Now()
 }

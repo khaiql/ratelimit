@@ -18,6 +18,8 @@ func NewMemoryStorage() *MemoryStorage {
 	}
 }
 
+// CountRequest counts the request being made at the timestamp, with account for the window duration
+// If the request is made passed the duration, a new window is start
 func (l *MemoryStorage) CountRequest(key string, requestTs time.Time, windowDuration time.Duration) (*WindowInfo, error) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
