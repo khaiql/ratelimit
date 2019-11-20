@@ -71,3 +71,7 @@ func (fw *FixedWindow) Allow(key string) (*ratelimit.RateInfo, error) {
 
 	return ri, nil
 }
+
+func (fw *FixedWindow) Close() error {
+	return fw.storage.Close()
+}

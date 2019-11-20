@@ -13,4 +13,5 @@ type RateInfo struct {
 
 type RateLimiter interface {
 	Allow(key string) (*RateInfo, error)
+	Close() error
 }
