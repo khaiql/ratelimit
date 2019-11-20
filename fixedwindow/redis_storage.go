@@ -6,6 +6,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
+// RedisStorage stores rate limit info in redis so it can be used in distributed system
 type RedisStorage struct {
 	p pool
 }
@@ -21,16 +22,19 @@ const (
 	keyPrefix        = "ratelimit:"
 )
 
+// NewRedisStorage returns a RedisStorage
 func NewRedisStorage(p pool) *RedisStorage {
 	return &RedisStorage{
 		p: p,
 	}
 }
 
+// Close closes the redis connection pool
 func (r *RedisStorage) Close() error {
 	return r.p.Close()
 }
 
+// CountRequest implements Storage interface
 func (r *RedisStorage) CountRequest(key string, requestTs time.Time, windowDuration time.Duration) (*WindowInfo, error) {
 	cn := r.p.Get()
 	defer cn.Close()

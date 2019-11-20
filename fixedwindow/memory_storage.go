@@ -5,12 +5,14 @@ import (
 	"time"
 )
 
+// MemoryStorage stores rate limit info in memory
 type MemoryStorage struct {
 	mu       sync.Mutex
 	countMap map[string]int
 	firstReq map[string]time.Time
 }
 
+// NewMemoryStorage returns an instance of MemoryStorage
 func NewMemoryStorage() *MemoryStorage {
 	return &MemoryStorage{
 		countMap: make(map[string]int),
@@ -18,6 +20,7 @@ func NewMemoryStorage() *MemoryStorage {
 	}
 }
 
+// Close implements Storage interface
 func (l *MemoryStorage) Close() error {
 	return nil
 }
