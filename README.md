@@ -1,5 +1,7 @@
 # ratelimit
 
+[![GoDoc](https://godoc.org/github.com/khaiql/ratelimit?status.svg)](https://godoc.org/github.com/khaiql/ratelimit)
+
 A simple RateLimit library written in Go. There are different algorithms for [rate limiting](https://en.wikipedia.org/wiki/Rate_limiting). This library implements a variant of Fixed Window Counter, where the window is counted since the first request is made instead of the floor of current request's timestamp. 
 
 ![ts](https://i.imgur.com/Nfz01gC.png "window image")
