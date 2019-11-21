@@ -18,7 +18,7 @@ type pool interface {
 
 const (
 	noCallsField     = "calls"
-	windowStartField = "start_timestamp"
+	windowStartField = "start_ts"
 	keyPrefix        = "ratelimit:"
 )
 
